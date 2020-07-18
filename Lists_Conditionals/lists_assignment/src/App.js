@@ -34,7 +34,7 @@ class App extends Component {
         />
         <p>{this.state.input}</p>
         <Validation length={this.state.input.length}/>
-        <CharOutput />
+        <CharOutput text={this.state.input}/>
       </div>
     );
   }
