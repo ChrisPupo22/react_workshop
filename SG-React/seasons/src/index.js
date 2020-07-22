@@ -1,23 +1,33 @@
 import React, { Component } from "react";
-import ReactDOM, { render } from "react-dom";
+import ReactDOM from "react-dom";
+import SeasonDisplay from './SeasonDisplay'; 
+import LoadingSpinner from './LoadingSpinner'; 
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  state = { lat: null, errorMessage: "" };
 
-    this.state = { lat: null, errorMessage: '' };
-
+  componentDidMount() {
     window.navigator.geolocation.getCurrentPosition(
       (position) => {
         // we called setState()
         this.setState({ lat: position.coords.latitude });
+        // console.log(position)
       },
-      (err) => console.log(err)
+      (err) => {
+        this.setState({ errorMessage: err.message });
+      }
     );
   }
 
   render() {
-    return <div>Latitude: {this.state.lat}</div>;
+    if (this.state.errorMessage && !this.state.lat) {
+      return <div>Error: {this.state.errorMessage}</div>;
+    }
+    if (!this.state.errorMessage && this.state.lat) {
+      return <SeasonDisplay lat={this.state.lat}/>
+    }
+
+    return <LoadingSpinner message={'waiting on user permission...'}/>
   }
 }
 
