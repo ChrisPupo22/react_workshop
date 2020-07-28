@@ -1,24 +1,52 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios'; 
+import axios from "axios";
 
 const SearchComp = () => {
   const [term, setTerm] = useState("");
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     const search = async () => {
-        await axios.get('https://en.wikipedia.org/w/api.php', {
-            params: {
-                action: 'query', 
-                list: 'search', 
-                origin: '*', 
-                format: 'json', 
-                srsearch: term
-            }
-        })
+      const { data } = await axios.get("https://en.wikipedia.org/w/api.php", {
+        params: {
+          action: "query",
+          list: "search",
+          origin: "*",
+          format: "json",
+          srsearch: term,
+        },
+      });
+
+      setResults(data.query.search);
+    };
+
+    if (term && !results.length) {
+        search(); 
     }
-  }, [term]); 
-  
+
+    const timeoutId = setTimeout(() => {
+      if (term) {
+        search();
+      }
+    }, 500);
+
+
+    return () => {
+        clearTimeout(timeoutId);
+    }
+  }, [term]);
+
+  const renderedResults = results.map((result) => {
+    return (
+      <div key={result.pageid} className="item">
+        <div className="content">
+          <div className="header">{result.title}</div>
+          {result.snippet}
+        </div>
+      </div>
+    );
+  });
+
   return (
     <div className="search">
       <div className="ui form">
@@ -31,6 +59,7 @@ const SearchComp = () => {
           />
         </div>
       </div>
+      <div className="ui celled list">{renderedResults}</div>
     </div>
   );
 };
