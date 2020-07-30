@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 const SongDetail = ({ song }) => {
   
   if (!song) {
-    return <div className=""></div>;
+    return <div className="ui warning message">Please Select a song</div>;
   }
   return (
     <div className="ui card">
